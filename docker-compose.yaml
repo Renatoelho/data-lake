@@ -1,6 +1,25 @@
 version: "3.3"
 
 services:
+  jupyter-notebook:
+    depends_on:
+      - minio-s3
+    hostname: jupyter-notebook
+    container_name: jupyter-notebook
+    image: renatoelho/servidor-jupyter:0.0.2
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.95"
+          memory: 2G
+    restart: always
+    volumes: 
+      - ./app:/home/jupyter/python/jupyter/app:rw
+    networks:
+      - network-data-lake
   minio-s3:
     hostname: minio-s3
     container_name: minio-s3
@@ -15,6 +34,7 @@ services:
     deploy:
       resources:
         limits:
+          cpus: "0.95"
           memory: 2G
     restart: always
     volumes: 
