@@ -1,0 +1,42 @@
+FROM python:3.9.1
+
+SHELL ["/bin/bash", "-c"]
+
+RUN useradd -ms /bin/bash spark -G sudo && \
+  passwd -d  spark && \
+  mkdir -p /home/spark/app
+
+RUN apt update && \
+  apt upgrade -y && \
+  apt install \
+  wget \
+  nano \
+  zip \
+  unzip \
+  tzdata -y && \
+  apt clean
+
+ENV JAVA_HOME="/home/jdk-11.0.2"
+ENV PATH="${JAVA_HOME}/bin/:${PATH}"
+
+ENV SPARK_HOME="/home/spark/spark-3.3.0"
+ENV PATH="${SPARK_HOME}/bin/:${PATH}"
+
+ENV PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
+ENV PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9.5-src.zip:$PYTHONPATH"
+
+ENV TZ=America/Sao_Paulo
+
+WORKDIR /home
+
+ADD https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz .
+ADD https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz .
+
+RUN tar xzf openjdk-11.0.2_linux-x64_bin.tar.gz && \
+  rm -f openjdk-11.0.2_linux-x64_bin.tar.gz
+
+RUN tar xzf spark-3.3.0-bin-hadoop3.tgz && \
+  rm -f spark-3.3.0-bin-hadoop3.tgz && \
+  mv spark-3.3.0-bin-hadoop3 /home/spark/spark-3.3.0
+
+ENTRYPOINT tail -f /dev/null
