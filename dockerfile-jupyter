@@ -1,26 +1,61 @@
-FROM renatoelho/servidor-jupyter:0.0.2
+FROM ubuntu:20.04
+
+LABEL maintainer="Renato coelho <contato@renato.tec.br>"
+LABEL version="0.0.2"
+LABEL description="Contêiner com Jupyter Notebook e Toml."
 
 SHELL ["/bin/bash", "-c"]
 
-ENV JAVA_HOME="/home/jdk-11.0.2"
-ENV PATH="${JAVA_HOME}/bin/:${PATH}"
+RUN apt update && \
+  apt install python3.8 \
+  python3.8-venv \
+  systemctl \
+  curl \
+  nano \
+  zip \
+  unzip \
+  tzdata \
+  sudo -y 
 
-ENV SPARK_HOME="/home/spark/spark-3.3.0"
-ENV PATH="${SPARK_HOME}/bin/:${PATH}"
+RUN useradd -ms /bin/bash jupyter -G sudo && \
+  passwd -d jupyter && \
+  mkdir -p /home/jupyter/python/jupyter
 
-ENV PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
+WORKDIR /home/jupyter/python/jupyter
 
-ENV TZ=America/Sao_Paulo
+COPY app/ .
 
-WORKDIR /home
-
+ADD deploy/jupyter/jupyter.service /etc/systemd/system/
+ADD deploy/jupyter/http.service /etc/systemd/system/
+ADD deploy/jupyter/token.service /etc/systemd/system/
+ADD deploy/jupyter/token_html.py /home/jupyter/python/
 ADD https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz .
-ADD https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz .
+
+RUN su - jupyter && \
+  mkdir -p /home/jupyter/python/jupyter/ && \
+  cd /home/jupyter/python/jupyter/ && \
+  python3 -m venv .venv && \
+  source .venv/bin/activate && \
+  pip install -U pip setuptools wheel && \
+  pip install -r requirements.txt && \
+  chown -R jupyter:jupyter /home/jupyter && \
+  chmod +x /home/jupyter/python/token_html.py
+
+RUN systemctl daemon-reload && \
+  systemctl enable jupyter.service && \
+  systemctl enable http.service && \
+  systemctl enable token.service
+
+ENV PYTHONPATH=/home/jupyter/python/jupyter/
+ENV TZ=America/Sao_Paulo
+ENV TERM=xterm-256color
+
+ENV JAVA_HOME=/home/jupyter/python/jupyter/jdk-11.0.2
+ENV PATH="${JAVA_HOME}/bin/:${PATH}"
 
 RUN tar xzf openjdk-11.0.2_linux-x64_bin.tar.gz && \
   rm -f openjdk-11.0.2_linux-x64_bin.tar.gz
 
-RUN tar xzf spark-3.3.0-bin-hadoop3.tgz && \
-  rm -f spark-3.3.0-bin-hadoop3.tgz && \
-  mkdir -p /home/spark/ && \
-  mv spark-3.3.0-bin-hadoop3 /home/spark/spark-3.3.0
+EXPOSE 9000 9001
+
+ENTRYPOINT systemctl start jupyter.service && systemctl start http.service && systemctl start token.service

@@ -1,0 +1,14 @@
+[Unit]
+Description=Servidor HTTP
+Requires=jupyter.service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/home/jupyter/python/jupyter/
+User=jupyter
+ExecStart=/bin/bash -c 'python3 -m http.server 9001 -b 0.0.0.0 -d /home/jupyter/python/'
+
+[Install]
+WantedBy=multi-user.target

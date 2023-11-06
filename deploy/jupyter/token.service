@@ -1,0 +1,14 @@
+[Unit]
+Description=Servidor Jupyter Notebook
+Requires=http.service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/home/jupyter/python/
+User=jupyter
+ExecStart=/bin/bash -c 'python3 /home/jupyter/python/token_html.py'
+
+[Install]
+WantedBy=multi-user.target
