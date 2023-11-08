@@ -1,35 +1,12 @@
 version: "3.3"
 
 services:
-  spark-app:
-    depends_on:
-      - minio-s3
-    build: 
-      dockerfile: ./dockerfile-spark
-      context: .
-    hostname: spark-app
-    container_name: spark-app
-    image: spark-app:0.0.1
-    ports:
-      - "9004:8080"
-    deploy:
-      resources:
-        limits:
-          cpus: "0.95"
-          memory: 4G
-    restart: always
-    networks:
-      network-data-lake:
-        ipv4_address: 10.0.0.2
   jupyter-notebook:
     depends_on:
       - minio-s3
-    build: 
-      dockerfile: ./dockerfile-jupyter
-      context: .
     hostname: jupyter-notebook
     container_name: jupyter-notebook
-    image: servidor-jupyter:0.0.1
+    image: renatoelho/servidor-jupyter:0.0.1
     ports:
       - "9000:9000"
       - "9001:9001"
