@@ -1,4 +1,4 @@
-purchase_id;customer_id;purchase_date;purchase_time;purchase_value;purchased_products;payment_method;purchase_status
+sale_id;customer_id;sale_date;sale_time;sale_value;product_sold;payment_method;sale_status
 1;358;2023-06-08;16:03;754.26;product2;credit_card;completed
 2;153;2023-04-26;11:27;2919.1;product1;cash;pending
 3;257;2023-07-16;1:20;5483.67;product2;cash;cancelled
