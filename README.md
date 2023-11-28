@@ -36,7 +36,7 @@ cd data-lake/
 docker compose -p project-data-lake -f docker-compose-abor.yaml up -d
 ```
 
-+ URLs de acesso
++ URLs de acesso:
 
 |Serviço            |URL           |
 |-------------------|--------------| 
