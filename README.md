@@ -51,13 +51,12 @@ docker compose -p project-data-lake -f docker-compose-abor.yaml up -d
 docker compose -p project-data-lake -f docker-compose-abor.yaml down
 ```
 
-
+<!--
 # Apresentação em vídeo
-
 <p align="center">
   <a href="https://youtube.com/@renato-coelho" target="_blank"><img src="docs/images/construindo-data-lake.png" alt="Vídeo de apresentação do Projeto"></a>
 </p>
-
+-->
 
 # Referências
 
